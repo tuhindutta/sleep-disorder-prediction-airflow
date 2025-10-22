@@ -51,10 +51,6 @@ pipeline {
             set -euo pipefail
             mkdir -p "${DEV_DIR}"
 
-            # write secrets without echoing quotes
-            printf "%s" "${NEXUS_USER}" > "${DEV_DIR}/nexus_user"
-            printf "%s" "${NEXUS_PASS}" > "${DEV_DIR}/nexus_pass"
-
             curl -fsSL -o "${DEV_DIR}/requirements.txt" \
                 "https://raw.githubusercontent.com/tuhindutta/sleep-disorder-prediction/main/requirements.txt"
 
@@ -64,9 +60,6 @@ pipeline {
         } else {
             bat '''
             if not exist "%DEV_DIR%" mkdir "%DEV_DIR%"
-
-            > "%DEV_DIR%\\nexus_user" echo %NEXUS_USER%
-            > "%DEV_DIR%\\nexus_pass" echo %NEXUS_PASS%
 
             curl -L -o "%DEV_DIR%\\requirements.txt" ^
                 https://raw.githubusercontent.com/tuhindutta/sleep-disorder-prediction/main/requirements.txt
@@ -90,6 +83,8 @@ pipeline {
                 if (isUnix()) {
                     sh '''
                     set -euo pipefail
+                    printf "%s" "${NEXUS_USER}" > "${DEV_DIR}/nexus_user"
+                    printf "%s" "${NEXUS_PASS}" > "${DEV_DIR}/nexus_pass"
                     cd "${DEV_DIR}"
                     docker login ${NEXUS_DOCKER_URL} -u "${NEXUS_USER}" -p "${NEXUS_PASS}"
                     docker build -t ${NEXUS_DOCKER_URL}/repository/sleep_disorder_airflow/:airflow-${BUILD_NUMBER} .
@@ -97,6 +92,8 @@ pipeline {
                     '''
                 } else {
                     bat '''
+                    echo %NEXUS_USER% > "%DEV_DIR%\\nexus_user"
+                    echo %NEXUS_PASS% > "%DEV_DIR%\\nexus_pass"
                     cd /d "%DEV_DIR%"
                     docker login %NEXUS_DOCKER_URL}% -u "%NEXUS_USER%" -p "%NEXUS_PASS%"
                     docker build -t %NEXUS_DOCKER_URL}%/repository/sleep_disorder_airflow/:airflow-%BUILD_NUMBER% .
