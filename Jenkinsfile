@@ -3,13 +3,13 @@ pipeline {
   options { timestamps() }
 
   parameters {
-    string(name: 'PYPI_URL', defaultValue: '', description: 'Optional custom PyPI/simple index URL')
-    string(name: 'DEV_DIR',  defaultValue: 'dev', description: 'Destination directory (absolute or relative)')
-    string(name: 'NEXUS_DOCKER_URL', defaultValue: '', description: 'Nexus docker URL.')
-    string(name: 'NEXUS_CREDS_ID', defaultValue: '', description: 'Jenkins credentialsId (username+password). Leave empty to use params below.')
-    string(name: 'NEXUS_USER', defaultValue: '', description: 'Only used if NEXUS_CREDS_ID is empty')
-    password(name: 'NEXUS_PASS', defaultValue: '', description: 'Only used if NEXUS_CREDS_ID is empty')
-    password(name: 'BUILD_NUMBER', defaultValue: '', description: 'Airflow Image')
+    string(name: 'PYPI_URL', description: 'Optional custom PyPI/simple index URL')
+    string(name: 'DEV_DIR',  defaultValue: './devlopent', description: 'Destination directory (absolute or relative)')
+    string(name: 'NEXUS_DOCKER_URL', description: 'Nexus docker URL.')
+    string(name: 'NEXUS_CREDS_ID', description: 'Jenkins credentialsId (username+password). Leave empty to use params below.')
+    string(name: 'NEXUS_USER', description: 'Only used if NEXUS_CREDS_ID is empty')
+    password(name: 'NEXUS_PASS', description: 'Only used if NEXUS_CREDS_ID is empty')
+    string(name: 'BUILD_NUMBER', description: 'Airflow Image')
     
   }
 
