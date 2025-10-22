@@ -72,7 +72,7 @@ pipeline {
       steps {
         script {
 
-            df dobuild {
+            def dobuild {
                 if (isUnix()) {
                     sh '''
                     set -euo pipefail
