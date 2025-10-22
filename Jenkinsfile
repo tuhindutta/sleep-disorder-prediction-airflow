@@ -49,24 +49,17 @@ pipeline {
         if (isUnix()) {
             sh '''
             set -euo pipefail
-            mkdir -p "${DEV_DIR}"
 
-            curl -fsSL -o "${DEV_DIR}/requirements.txt" \
+            curl -fsSL -o "./requirements.txt" \
                 "https://raw.githubusercontent.com/tuhindutta/sleep-disorder-prediction/main/requirements.txt"
 
-            # recursive force copy of workspace contents to DEV_DIR
-            cp -rf ./* "${DEV_DIR}"
             '''
         } else {
             bat '''
-            if not exist "%DEV_DIR%" mkdir "%DEV_DIR%"
 
-            curl -L -o "%DEV_DIR%\\requirements.txt" ^
+            curl -L -o ".\requirements.txt" ^
                 https://raw.githubusercontent.com/tuhindutta/sleep-disorder-prediction/main/requirements.txt
 
-            rem Robust recursive copy; treat RC 0–7 as success.
-            robocopy . "%DEV_DIR%" /E /NFL /NDL /NJH /NJS /NP >NUL
-            if %ERRORLEVEL% LEQ 7 (exit /b 0) else (exit /b %ERRORLEVEL%)
             '''
         }
 
@@ -83,21 +76,19 @@ pipeline {
                 if (isUnix()) {
                     sh '''
                     set -euo pipefail
-                    printf "%s" "${NEXUS_USER}" > "${DEV_DIR}/nexus_user"
-                    printf "%s" "${NEXUS_PASS}" > "${DEV_DIR}/nexus_pass"
-                    cd "${DEV_DIR}"
-                    docker login ${NEXUS_DOCKER_URL} -u "${NEXUS_USER}" -p "${NEXUS_PASS}"
-                    docker build -t ${NEXUS_DOCKER_URL}/repository/sleep_disorder_airflow/:airflow-${BUILD_NUMBER} .
-                    docker push ${NEXUS_DOCKER_URL}/repository/sleep_disorder_airflow/:airflow-${BUILD_NUMBER}
+                    printf "%s" "${NEXUS_USER}" > "./nexus_user"
+                    printf "%s" "${NEXUS_PASS}" > "./nexus_pass"
+                    // docker login ${NEXUS_DOCKER_URL} -u "${NEXUS_USER}" -p "${NEXUS_PASS}"
+                    // docker build -t ${NEXUS_DOCKER_URL}/repository/sleep_disorder_airflow/:airflow-${BUILD_NUMBER} .
+                    // docker push ${NEXUS_DOCKER_URL}/repository/sleep_disorder_airflow/:airflow-${BUILD_NUMBER}
                     '''
                 } else {
                     bat '''
-                    echo %NEXUS_USER% > "%DEV_DIR%\\nexus_user"
-                    echo %NEXUS_PASS% > "%DEV_DIR%\\nexus_pass"
-                    cd /d "%DEV_DIR%"
-                    docker login %NEXUS_DOCKER_URL}% -u "%NEXUS_USER%" -p "%NEXUS_PASS%"
-                    docker build -t %NEXUS_DOCKER_URL}%/repository/sleep_disorder_airflow/:airflow-%BUILD_NUMBER% .
-                    docker push %NEXUS_DOCKER_URL}%/repository/sleep_disorder_airflow/:airflow-%BUILD_NUMBER%
+                    echo %NEXUS_USER% > ".\nexus_user"
+                    echo %NEXUS_PASS% > ".\nexus_pass"
+                    // docker login %NEXUS_DOCKER_URL}% -u "%NEXUS_USER%" -p "%NEXUS_PASS%"
+                    // docker build -t %NEXUS_DOCKER_URL}%/repository/sleep_disorder_airflow/:airflow-%BUILD_NUMBER% .
+                    // docker push %NEXUS_DOCKER_URL}%/repository/sleep_disorder_airflow/:airflow-%BUILD_NUMBER%
                     '''
                 }
             }
