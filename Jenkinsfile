@@ -78,13 +78,15 @@ pipeline {
                     set -euo pipefail
                     printf "%s" "${NEXUS_USER}" > "./nexus_user"
                     printf "%s" "${NEXUS_PASS}" > "./nexus_pass"
-                    docker-compose up -d
+                    docker compose version
+                    docker compose up -d
                     '''
                 } else {
                     bat '''
                     echo %NEXUS_USER% > ".\nexus_user"
                     echo %NEXUS_PASS% > ".\nexus_pass"
-                    docker-compose up -d
+                    docker compose version
+                    docker compose up -d
                     '''
                 }
             }
@@ -114,89 +116,3 @@ pipeline {
     }
   }
 }
-
-
-
-// pipeline {
-//   agent any
-//   options { timestamps() }
-
-//   environment {
-//     VENV_DIR     = '.venv'
-//     ARTIFACT_DIR = 'dist'
-//     PYPI         = "${params.PYPI_URL}"
-//     DEV_DIR      = "${params.DEV_DIR}"
-//     NEXUS_USER   = "${params.NEXUS_USER}"
-//     NEXUS_PASS   = "${params.NEXUS_PASS}"
-//   }
-
-//   stages {
-
-//     stage('Checkout') {
-//       steps {
-//         script {
-//           echo "Cleaning and preparing workspace..."
-//           cleanWs()
-//           checkout scm
-//           echo "Branch: ${env.BRANCH_NAME ?: 'N/A'}"
-//           echo "Workspace: ${env.WORKSPACE}"
-//         }
-//       }
-//     }
-
-//     stage('Prepare the environment') {
-//         steps {
-//             script {
-//             if (isUnix()) {
-//                 sh '''
-//                 set -euo pipefail
-//                 mkdir -p "${DEV_DIR}"
-
-//                 printf "%s" "${NEXUS_USER}" > "${DEV_DIR}/nexus_user"
-//                 printf "%s" "${NEXUS_PASS}" > "${DEV_DIR}/nexus_pass"
-
-//                 curl -fsSL -o "${DEV_DIR}/requirements.txt" \
-//                     "https://raw.githubusercontent.com/tuhindutta/sleep-disorder-prediction/main/requirements.txt"
-
-//                 cp -rf ./* "${DEV_DIR}"
-//                 '''
-//             } else {
-//                 bat '''
-//                 if not exist "%DEV_DIR%" mkdir "%DEV_DIR%"
-
-//                 > "%DEV_DIR%\\nexus_user" echo %NEXUS_USER%
-//                 > "%DEV_DIR%\\nexus_pass" echo %NEXUS_PASS%
-
-//                 curl -L -o "%DEV_DIR%\\requirements.txt" ^
-//                     https://raw.githubusercontent.com/tuhindutta/sleep-disorder-prediction/main/requirements.txt
-
-//                 robocopy . "%DEV_DIR%" /E /NFL /NDL /NJH /NJS /NP >NUL
-//                 if %ERRORLEVEL% LEQ 7 (exit /b 0) else (exit /b %ERRORLEVEL%)
-//                 '''
-//             }
-//             }
-//         }
-//         }
-
-
-//     stage('Build') {
-//       steps {
-//         script {
-//           if (isUnix()) {
-//             sh """
-//             cd "${DEV_DIR}"
-//             docker-compose up -d
-//             """
-//           } else {
-//             bat """
-//             cd "${DEV_DIR}"
-//             docker-compose up -d
-//             """
-//           }
-//         }
-//       }
-//     }
-
-
-//   }
-// }
