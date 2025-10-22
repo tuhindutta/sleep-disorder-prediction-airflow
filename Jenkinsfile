@@ -72,23 +72,19 @@ pipeline {
       steps {
         script {
 
-            def dobuild = {
+            def dobuild {
                 if (isUnix()) {
                     sh '''
                     set -euo pipefail
                     printf "%s" "${NEXUS_USER}" > "./nexus_user"
                     printf "%s" "${NEXUS_PASS}" > "./nexus_pass"
-                    docker login ${NEXUS_DOCKER_URL} -u "${NEXUS_USER}" -p "${NEXUS_PASS}"
-                    docker build -t ${NEXUS_DOCKER_URL}/repository/sleep_disorder_airflow/:airflow-${BUILD_NUMBER} .
-                    docker push ${NEXUS_DOCKER_URL}/repository/sleep_disorder_airflow/:airflow-${BUILD_NUMBER}
+                    docker-compose up -d
                     '''
                 } else {
                     bat '''
                     echo %NEXUS_USER% > ".\nexus_user"
                     echo %NEXUS_PASS% > ".\nexus_pass"
-                    docker login %NEXUS_DOCKER_URL}% -u "%NEXUS_USER%" -p "%NEXUS_PASS%"
-                    docker build -t %NEXUS_DOCKER_URL}%/repository/sleep_disorder_airflow/:airflow-%BUILD_NUMBER% .
-                    docker push %NEXUS_DOCKER_URL}%/repository/sleep_disorder_airflow/:airflow-%BUILD_NUMBER%
+                    docker-compose up -d
                     '''
                 }
             }
