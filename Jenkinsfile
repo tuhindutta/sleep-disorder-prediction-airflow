@@ -4,12 +4,12 @@ pipeline {
 
   parameters {
     string(name: 'PYPI_URL', description: 'Optional custom PyPI/simple index URL')
-    // string(name: 'DEV_DIR',  defaultValue: '/devlopment', description: 'Destination directory (absolute or relative)')
+    string(name: 'DEV_DIR',  defaultValue: '/devlopment', description: 'Destination directory (absolute or relative)')
     // string(name: 'NEXUS_DOCKER_URL', description: 'Nexus docker URL.')
     // string(name: 'NEXUS_CREDS_ID', description: 'Jenkins credentialsId (username+password). Leave empty to use params below.')
     string(name: 'NEXUS_USER', description: 'Only used if NEXUS_CREDS_ID is empty')
     password(name: 'NEXUS_PASS', description: 'Only used if NEXUS_CREDS_ID is empty')
-    // string(name: 'BUILD_NUMBER', description: 'Airflow Image')
+    string(name: 'BUILD_NUMBER', description: 'Airflow Image')
     
   }
 
@@ -63,6 +63,7 @@ pipeline {
               curl -fsSL -o "./requirements.txt" \
                   "https://raw.githubusercontent.com/tuhindutta/sleep-disorder-prediction/main/requirements.txt"
               cp -r ./* ${DEV_DIR_RAW}
+              echo "Development env prepared."
               '''
             } else {
               bat '''
@@ -81,6 +82,7 @@ pipeline {
               curl -L -o ".\\requirements.txt" ^
                   https://raw.githubusercontent.com/tuhindutta/sleep-disorder-prediction/main/requirements.txt
               xcopy * "%DEV_DIR_RAW%" /E /H /K /Y /I
+              echo Development env prepared.
               '''
             }
           }
