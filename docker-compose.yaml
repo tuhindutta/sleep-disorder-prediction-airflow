@@ -54,7 +54,7 @@ x-airflow-common:
     context: .
     dockerfile: Dockerfile
     args:
-      NEXUS_URL: ${NEXUS_URL}
+      INDEX_URL: ${NEXUS_URL}
     secrets:
       - nexus_user
       - nexus_pass
