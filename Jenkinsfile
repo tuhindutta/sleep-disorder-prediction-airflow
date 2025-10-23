@@ -112,12 +112,14 @@ pipeline {
                 cd "${env.DEV_DIR}"
                 ${cmd}
                 rm -rf nexus_user nexus_pass requirements.txt
+                git config --global --add safe.directory ${DEV_DIR_RAW}
                 """
             } else {
                 bat"""
                 cd /d "${env.DEV_DIR}"
                 ${cmd}
                 del /F /Q "nexus_user" "nexus_pass" "requirements.txt" 2>nul
+                git config --global --add safe.directory %DEV_DIR_RAW%
                 """
             }
           }
