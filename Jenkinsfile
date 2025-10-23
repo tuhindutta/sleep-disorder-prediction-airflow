@@ -58,9 +58,9 @@ pipeline {
               '''
             } else {
               bat '''
-              echo %NEXUS_USER% > ".\nexus_user"
-              echo %NEXUS_PASS% > ".\nexus_pass"
-              curl -L -o ".\requirements.txt" ^
+              echo %NEXUS_USER% > ".\\nexus_user"
+              echo %NEXUS_PASS% > ".\\nexus_pass"
+              curl -L -o ".\\requirements.txt" ^
                   https://raw.githubusercontent.com/tuhindutta/sleep-disorder-prediction/main/requirements.txt
 
               '''
