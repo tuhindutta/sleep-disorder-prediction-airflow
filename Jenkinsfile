@@ -48,21 +48,40 @@ pipeline {
           def prep = {
             if (isUnix()) {
               sh '''
+              echo "Creating development directory..."
+              if [ -d "$DEV_DIR_RAW" ]; then
+                echo "Cleaning existing directory: $DEV_DIR_RAW"
+                rm -rf "${DEV_DIR_RAW:?}/"*
+              else
+                echo "Creating directory: $DEV_DIR"
+                mkdir -p "$DEV_DIR_RAW"
+              fi
+              echo "Development directory created"
               set -euo pipefail
               set -euo pipefail
               printf "%s" "${NEXUS_USER}" > "./nexus_user"
               printf "%s" "${NEXUS_PASS}" > "./nexus_pass"
               curl -fsSL -o "./requirements.txt" \
                   "https://raw.githubusercontent.com/tuhindutta/sleep-disorder-prediction/main/requirements.txt"
-
+              cp -r ./* ${DEV_DIR_RAW}
               '''
             } else {
               bat '''
+              echo Creating development directory...
+              if exist "%DEV_DIR_RAW%" (
+                  echo Cleaning existing directory: %DEV_DIR_RAW%
+                  del /Q "%DEV_DIR_RAW%\*" >nul 2>&1
+                  for /d %%i in ("%DEV_DIR_RAW%\*") do rmdir /S /Q "%%i"
+              ) else (
+                  echo Creating directory: %DEV_DIR_RAW%
+                  mkdir "%DEV_DIR_RAW%"
+              )
+              echo Development directory created
               echo %NEXUS_USER% > ".\\nexus_user"
               echo %NEXUS_PASS% > ".\\nexus_pass"
               curl -L -o ".\\requirements.txt" ^
                   https://raw.githubusercontent.com/tuhindutta/sleep-disorder-prediction/main/requirements.txt
-
+              xcopy * "%DEV_DIR_RAW%" /E /H /K /Y /I
               '''
             }
           }
@@ -87,12 +106,14 @@ pipeline {
         script {
 
           def shell = { String cmd ->
+            def dir = env.DEV_DIR
             if (isUnix()) {
-              sh(script: cmd)
+                sh(script: "cd '${dir}' && ${cmd}")
             } else {
-              bat(script: cmd)
+                bat(script: "cd \"${dir}\" && ${cmd}")
             }
-          }
+        }
+
 
           shell('''
           docker compose version
