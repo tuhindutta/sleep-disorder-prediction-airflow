@@ -109,11 +109,18 @@ pipeline {
           def shell = { String cmd ->
             def dir = env.DEV_DIR
             if (isUnix()) {
-                sh(script: "cd '${dir}' && ${cmd}")
+                sh"""
+                set -e
+                cd "${env.DEV_DIR}"
+                ${cmd}
+                """
             } else {
-                bat(script: "cd \"${dir}\" && ${cmd}")
+                bat"""
+                cd /d "${env.DEV_DIR}"
+                ${cmd}
+                """
             }
-        }
+          }
 
 
           shell('''
