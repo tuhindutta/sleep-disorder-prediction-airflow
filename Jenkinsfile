@@ -14,7 +14,6 @@ pipeline {
   }
 
   environment {
-    VENV_DIR     = '.venv'
     PYPI         = "${params.PYPI_URL}"
     DEV_DIR_RAW  = "${params.DEV_DIR}"
     // NEXUS_DOCKER_URL = "${params.NEXUS_DOCKER_URL}"
@@ -71,7 +70,7 @@ pipeline {
               if exist "%DEV_DIR_RAW%" (
                   echo Cleaning existing directory: %DEV_DIR_RAW%
                   del /Q "%DEV_DIR_RAW%\\*" >nul 2>&1
-                  for /d %%i in ("%DEV_DIR_RAW%\*") do rmdir /S /Q "%%i"
+                  for /d %%i in ("%DEV_DIR_RAW%\\*") do rmdir /S /Q "%%i"
               ) else (
                   echo Creating directory: %DEV_DIR_RAW%
                   mkdir "%DEV_DIR_RAW%"
