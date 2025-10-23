@@ -133,6 +133,8 @@ pipeline {
     }
   }
 
+  }
+
 
   post {
     always {
@@ -141,3 +143,4 @@ pipeline {
     }
   }
 }
+
