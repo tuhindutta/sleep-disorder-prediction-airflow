@@ -65,6 +65,7 @@ pipeline {
 
               '''
             }
+          }
 
           if (params.NEXUS_CREDS_ID?.trim()) {
               withCredentials([usernamePassword(credentialsId: params.NEXUS_CREDS_ID, usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
@@ -102,7 +103,7 @@ pipeline {
       }
     }
   }
-}
+
 
   post {
     always {
