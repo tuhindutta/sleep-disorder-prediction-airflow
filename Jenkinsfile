@@ -3,7 +3,7 @@ pipeline {
   options { timestamps() }
 
   parameters {
-    // string(name: 'PYPI_URL', description: 'Optional custom PyPI/simple index URL')
+    string(name: 'PYPI_URL', description: 'Optional custom PyPI/simple index URL')
     // string(name: 'DEV_DIR',  defaultValue: '/devlopment', description: 'Destination directory (absolute or relative)')
     // string(name: 'NEXUS_DOCKER_URL', description: 'Nexus docker URL.')
     // string(name: 'NEXUS_CREDS_ID', description: 'Jenkins credentialsId (username+password). Leave empty to use params below.')
@@ -70,7 +70,7 @@ pipeline {
               echo Creating development directory...
               if exist "%DEV_DIR_RAW%" (
                   echo Cleaning existing directory: %DEV_DIR_RAW%
-                  del /Q "%DEV_DIR_RAW%\*" >nul 2>&1
+                  del /Q "%DEV_DIR_RAW%\\*" >nul 2>&1
                   for /d %%i in ("%DEV_DIR_RAW%\*") do rmdir /S /Q "%%i"
               ) else (
                   echo Creating directory: %DEV_DIR_RAW%
