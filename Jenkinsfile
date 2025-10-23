@@ -3,7 +3,7 @@ pipeline {
   options { timestamps() }
 
   parameters {
-    string(name: 'PYPI_URL', description: 'Optional custom PyPI/simple index URL')
+    string(name: 'NEXUS_URL', description: 'Optional custom PyPI/simple index URL')
     string(name: 'DEV_DIR',  defaultValue: '/devlopment', description: 'Destination directory (absolute or relative)')
     // string(name: 'NEXUS_DOCKER_URL', description: 'Nexus docker URL.')
     string(name: 'NEXUS_CREDS_ID', description: 'Jenkins credentialsId (username+password). Leave empty to use params below.')
@@ -12,7 +12,7 @@ pipeline {
   }
 
   environment {
-    PYPI         = "${params.PYPI_URL}"
+    NEXUS_URL         = "${params.NEXUS_URL}"
     DEV_DIR_RAW  = "${params.DEV_DIR}"
     // NEXUS_DOCKER_URL = "${params.NEXUS_DOCKER_URL}"
     BUILD_NUMBER = "${params.BUILD_NUMBER}"
@@ -111,20 +111,22 @@ pipeline {
                 set -e
                 cd "${env.DEV_DIR}"
                 ${cmd}
+                rm -rf nexus_user nexus_pass requirements.txt
                 """
             } else {
                 bat"""
                 cd /d "${env.DEV_DIR}"
                 ${cmd}
+                del /F /Q "nexus_user" "nexus_pass" "requirements.txt" 2>nul
                 """
             }
           }
 
-
-          shell('''
-          docker compose version
-          docker compose up -d
-          ''')
+          withEnv(["NEXUS_URL=${params.NEXUS_URL}"]) {
+          shell("""
+            docker compose version
+            docker compose up -d
+          """)
    
         }
       }
