@@ -116,13 +116,15 @@ pipeline {
                 set -e
                 cd "${env.DEV_DIR}"
                 ${cmd}
-                rm -rf nexus_user nexus_pass
+                rm -rf nexus_user nexus_pass .env Dockerfile Jenkinsfile \
+                docker-compose.yaml requirements.txt custom_requirements.txt
                 """
             } else {
                 bat"""
                 cd /d "${env.DEV_DIR}"
                 ${cmd}
-                del /F /Q "nexus_user" "nexus_pass" 2>nul
+                del /F /Q "nexus_user" "nexus_pass" ".env" "Dockerfile" "Jenkinsfile" ^
+                "docker-compose.yaml" "requirements.txt" "custom_requirements.txt" 2>nul
                 """
             }
           }
