@@ -84,7 +84,7 @@ pipeline {
               echo %NEXUS_PASS% > ".\\nexus_pass"
               curl -L -o ".\\requirements.txt" %REQUIREMENTS%
               curl -L -o ".\\custom_requirements.txt" %CUSTOM_REQUIREMENTS%
-              rmdir .\\.git
+              rmdir /s /q ".\\.git"
               xcopy * "%DEV_DIR_RAW%" /E /H /K /Y /I
               echo Development env prepared.
               '''
