@@ -73,8 +73,7 @@ pipeline {
               echo Creating development directory...
               if exist "%DEV_DIR_RAW%" (
                   echo Cleaning existing directory: %DEV_DIR_RAW%
-                  del /Q "%DEV_DIR_RAW%\\*" >nul 2>&1
-                  for /d %%i in ("%DEV_DIR_RAW%\\*") do rmdir /S /Q "%%i"
+                  rmdir /s /q "%DEV_DIR_RAW%\\*"
               ) else (
                   echo Creating directory: %DEV_DIR_RAW%
                   mkdir "%DEV_DIR_RAW%"
