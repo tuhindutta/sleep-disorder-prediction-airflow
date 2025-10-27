@@ -4,6 +4,7 @@ FROM apache/airflow:3.1.0
 USER root
 
 COPY requirements.txt /requirements.txt
+COPY custom_requirements.txt /custom_requirements.txt
 
 
 # ARG NEXUS_URL=https://c3054db9fb32.ngrok-free.app/repository/pypi-internal/simple
