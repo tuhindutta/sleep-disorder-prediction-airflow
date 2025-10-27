@@ -4,11 +4,13 @@ pipeline {
 
   parameters {
     string(name: 'NEXUS_URL', description: 'Optional custom PyPI/simple index URL')
-    string(name: 'DEV_DIR',  defaultValue: '/devlopment', description: 'Destination directory (absolute or relative)')
+    string(name: 'DEV_DIR',  description: 'Destination directory (absolute or relative)')
     // string(name: 'NEXUS_DOCKER_URL', description: 'Nexus docker URL.')
     string(name: 'NEXUS_CREDS_ID', description: 'Jenkins credentialsId (username+password). Leave empty to use params below.')
     string(name: 'NEXUS_USER', description: 'Only used if NEXUS_CREDS_ID is empty')
-    password(name: 'NEXUS_PASS', description: 'Only used if NEXUS_CREDS_ID is empty')    
+    password(name: 'NEXUS_PASS', description: 'Only used if NEXUS_CREDS_ID is empty')   
+    string(name: 'REQUIREMENTS', description: 'requirements.txt') 
+    string(name: 'CUSTOM_REQUIREMENTS', description: 'custom_requirements.txt') 
   }
 
   environment {
@@ -16,6 +18,8 @@ pipeline {
     DEV_DIR_RAW  = "${params.DEV_DIR}"
     // NEXUS_DOCKER_URL = "${params.NEXUS_DOCKER_URL}"
     BUILD_NUMBER = "${params.BUILD_NUMBER}"
+    REQUIREMENTS = "${params.REQUIREMENTS}"
+    CUSTOM_REQUIREMENTS = "${params.CUSTOM_REQUIREMENTS}"
   }
 
   stages {
@@ -58,8 +62,9 @@ pipeline {
               set -euo pipefail
               printf "%s" "${NEXUS_USER}" > "./nexus_user"
               printf "%s" "${NEXUS_PASS}" > "./nexus_pass"
-              curl -fsSL -o "./requirements.txt" \
-                  "https://raw.githubusercontent.com/tuhindutta/sleep-disorder-prediction/main/requirements.txt"
+              curl -fsSL -o "./requirements.txt" ${REQUIREMENTS}
+              curl -fsSL -o "./custom_requirements.txt" ${CUSTOM_REQUIREMENTS}
+              rm -rf ./.git
               cp -r ./* ${DEV_DIR_RAW}
               echo "Development env prepared."
               '''
@@ -77,8 +82,9 @@ pipeline {
               echo Development directory created
               echo %NEXUS_USER% > ".\\nexus_user"
               echo %NEXUS_PASS% > ".\\nexus_pass"
-              curl -L -o ".\\requirements.txt" ^
-                  https://raw.githubusercontent.com/tuhindutta/sleep-disorder-prediction/main/requirements.txt
+              curl -L -o ".\\requirements.txt" %REQUIREMENTS%
+              curl -L -o ".\\custom_requirements.txt" %CUSTOM_REQUIREMENTS%
+              rmdir .\\.git
               xcopy * "%DEV_DIR_RAW%" /E /H /K /Y /I
               echo Development env prepared.
               '''
@@ -111,15 +117,13 @@ pipeline {
                 set -e
                 cd "${env.DEV_DIR}"
                 ${cmd}
-                rm -rf nexus_user nexus_pass requirements.txt
-                git config --global --add safe.directory ${DEV_DIR_RAW}
+                rm -rf nexus_user nexus_pass
                 """
             } else {
                 bat"""
                 cd /d "${env.DEV_DIR}"
                 ${cmd}
-                del /F /Q "nexus_user" "nexus_pass" "requirements.txt" 2>nul
-                git config --global --add safe.directory %DEV_DIR_RAW%
+                del /F /Q "nexus_user" "nexus_pass" 2>nul
                 """
             }
           }

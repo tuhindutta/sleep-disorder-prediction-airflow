@@ -27,4 +27,4 @@ RUN pip install --no-cache-dir --upgrade pip && \
     
 RUN pip install --no-cache-dir --no-deps \
     --index-url "${PYPI_URL}" \
-    "${PRIVATE_PKG}==${PRIVATE_VER}"
+    /custom_requirements.txt
